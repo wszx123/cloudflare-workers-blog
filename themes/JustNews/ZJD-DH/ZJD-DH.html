@@ -1,0 +1,523 @@
+<html>
+<head>
+<title>ZJD导航，可寻万物</title>
+<link rel="shortcut icon" href="http://52bsj.vip:81/api/v3/file/get/159987/%E5%9B%BE%E6%A0%873.png?sign=K1FcVGmsJVAbOWKRpwXCF3J0HusHJ7JukVCekSX-zjU%3D%3A0">
+<style>
+<!--其中background-image属性设置了网页的背景图片，container类设置了网页的宽度和居中对齐，row类设置了按纽的排列方式，button类设置了按纽的样式。-->
+
+<style type=text/css>
+<!-- body {
+font:normal 14px Tahoma, Simsun;
+vertical-align:baseline;
+background:#fff;
+margin:0;
+padding:25px 0 0;
+}
+
+body {
+background-image: url(http://52bsj.vip:81/api/v3/file/get/158093/%E7%AE%80%E7%BA%A6%E5%AF%BC%E8%88%AABJ.jpg?sign=jA7gfPX0ET37QVTT_IXEDGgYxtl6ZLk0oyljesBDKyk%3D%3A0);
+background-size: cover;
+background-repeat: no-repeat;
+background-attachment: fixed;
+}
+
+.sites {
+width:1080px;
+background:;
+border:0px solid #836FFF;
+margin:15px auto;
+padding:0px;
+}
+
+.sites01 {
+width:1080px;
+background:;
+border:2px solid auto;
+margin:15px auto;
+padding:0px;
+}
+
+.sites dl {
+height:36px;
+line-height:36px;
+display:block;
+margin:0;
+}
+
+.sites dl.alt {
+background:#c5dff6;
+border-top:1px solid #ffffff;
+border-bottom:1px solid #ffffff;
+}
+
+.sites dl.alt2 {
+background:#dcecfa;
+border-top:1px solid #ffffff;
+border-bottom:1px solid #ffffff;
+}
+
+.sites dt,.sites dd {
+text-align:center;
+display:block;
+float:left;
+}
+
+.sites dt {
+width:60px;
+}
+
+.sites dd {
+width:90px;
+margin:0;
+}
+
+.footer {
+font-size:10px;
+color:#0000EE;
+margin:15px auto;
+}
+
+.center {
+text-align:center;
+font-weight:700;
+}
+
+.center a {
+color:#f30;
+}
+
+ .sidebar{
+float: left;/*侧边栏居左，改为right可令侧边栏居右*/
+width: 200px;
+border:2px solid #f2f2f2;
+margin-left:20%;
+background:#f8f8f8;
+position: absolute;
+}
+
+.header,.links,.footer {
+width:580px;
+text-align:center;
+margin:5px auto;
+padding:2px;
+}
+.search {
+width:580px;
+text-align:center;
+background:#f8f8f8;
+border:2px solid #f2f2f2;
+margin:15px auto;
+padding:8px 4px;
+}
+
+.search form {
+width:485px;
+margin:0 auto;
+}
+
+.i {
+font-size:16px;
+font-family:Tahoma;
+width:360px;
+height:40px;
+line-height:30px;
+margin-right:2px;
+background:#fff url(img/search_bg.png) no-repeat;
+border:2px solid #6495ED;
+display:inline-block;
+border-color:#6495ED #6495ED #6495ED #6495ED;
+padding:3px 6px;
+}
+
+.btn_wr {
+width:97px;
+height:40px;
+vertical-align:top;
+_padding-top:1px;
+background:url(img/search_bg.png) no-repeat -202px bottom;
+display:inline-block;
+}
+
+.btn {
+font:normal 20px Tahoma;
+width:95px;
+height:40px;
+background:rgba(0,0,0,.16) url(img/search_bg.png) no-repeat 0 -35px;
+cursor:pointer;
+border:0;
+padding:0;
+}
+
+.btn_h {
+background-position:-100px -35px;
+}
+
+
+
+.button-container {
+display: flex;
+flex-wrap: wrap;
+justify-content: left;
+}
+
+.button01 {
+width: 92px;
+height: 30px;
+background-color: rgba(0,0,0,.30);
+margin: 3px;
+display: flex;
+justify-content: center;
+align-items: center;
+color: #0000EE;
+font-size: 18px;
+cursor: pointer;
+}
+.button02 {
+width: 92px;
+height: 30px;
+background-color: #878787;
+margin: 3px;
+display: flex;
+justify-content: center;
+align-items: center;
+color: #0000EE;
+font-size: 18px;
+cursor: pointer;
+}
+
+.button1 {
+width: 92px;
+height: 30px;
+background-color: rgba(0,0,0,.24);
+margin: 3px;
+display: flex;
+justify-content: center;
+align-items: center;
+color: white;
+font-size: 14px;
+cursor: pointer;
+}
+.button2 {
+width: 92px;
+height: 30px;
+background-color: #6E6E6E;
+margin: 3px;
+display: flex;
+justify-content: center;
+align-items: center;
+color: white;
+font-size: 14px;
+cursor: pointer;
+}
+</style>
+
+
+<!-- 测试多搜索 -->
+<div class="header"> 
+<div style="background:rgba(0,0,0,.002);height:68px;">
+<br />
+<form name="searchform" onSubmit="return dosearch();" >
+
+<input name="ie" type="hidden"  value="UTF-8">
+<input type="text" name="searchterms" class="i">
+
+<select name="sengines" >
+<option value="http://www.baidu.com/s?wd=" selected>百 度</option>
+<option value="https://www.bing.com/search?q=">必 应</option>
+<option value="https://so.toutiao.com/search?dvpf=pc&source=trending_card&keyword=">头 条</option>
+<option value="https://search.bilibili.com/all?keyword=">哔 哩</option>
+<option value="https://www.so.com/s?q=">3 6 0</option>
+<option value="https://www.sogou.com/web?query=">搜 狗</option>
+<option value="http://www.google.com/search?q=">谷 歌</option>
+<option value="https://github.com/search?q=">github</option>
+<option value="https://fsoufsou.com/search?q=">F 搜</option>
+</select>
+
+<input type="submit" class="btn" name="SearchSubmit" value=" 搜   索 ">
+
+</form>
+<script type="text/javascript">
+function dosearch() {
+var sf=document.searchform;
+var submitto = sf.sengines.options[sf.sengines.selectedIndex].value + encodeURI(sf.searchterms.value)+"&ie=utf-8" ;<!-- 注意encodeURI不用escape是因为中文可能变乱码 -->
+window.open(submitto);  <!-- 新窗口打开  window.location.href = submitto；原窗口打开 -->
+return false;
+}
+</script>
+<br />
+</div>
+</div>
+<!--   20230702 end -->
+
+</div>
+<div class="sites">  <!-- 网址超链接开始--><!--    模块隔离    -->
+<div class="button-container">
+<div class="button01" >常·用</div>
+<a href="https://blog.wszx.sbs" class="button1" target="_blank" >wszx博客</a>
+<a href="https://www.toutiao.com/" class="button1" target="_blank" >今日头条</a>
+<a href="https://gitmind.cn/app/doc/a261117368"class="button1" target="_blank" >gitmind</a>
+<a href="https://www.hao123.com/" class="button1" target="_blank" >好 123</a>
+<a href="https://hot.imsyy.top/" class="button1" target="_blank" >热        榜</a>
+<a href="https://www.163.com/" class="button1" target="_blank" >网易163</a>
+<a href="https://tool.lu/" class="button1" target="_blank" >工        具</a>
+<a href="https://github.com/wszx123" class="button1" target="_blank" >github</a>
+<a href="https://www.lige.fit/" class="button1" target="_blank" >黎        歌</a>
+<a href="https://hao.360.com/" class="button1" target="_blank" >360导航</a>
+<a href="https://funtabs.cn/" class="button1" target="_blank" >趣标签页</a>
+<a href="https://nav.kksan.top/" class="button1" target="_blank" >一个导航</a>
+<a href="https://www.miguyu.com/" class="button1" target="_blank" >咪 咕 鱼</a>
+<a href="http://guozhivip.com/" class="button1" target="_blank" >果汁导航</a>
+<a href="http://ac.scmor.com/" class="button1" target="_blank" >谷歌镜像</a>
+
+<div class="button-container">
+<div class="button01" >影·视</div>
+<a href="https://www.bilibili.com/" class="button1" target="_blank" >哔哩哔哩</a>
+<a href="http://www.iqiyi.com/" class="button1" target="_blank" >爱 奇 艺</a>
+<a href="http://www.youku.com" class="button1" target="_blank" >优酷视频</a>
+<a href="https://tv.cctv.com/live/?spm=C96370.PsikHJQ1ICOX.Exanhtjhchcl.1" class="button1" target="_blank" >cctv直播</a>
+<a href="http://www.fun.tv/" class="button1" target="_blank" >风行视频</a>
+<a href="https://haokan.baidu.com/" class="button1" target="_blank" >好看视频</a>
+<a href="https://www.mgtv.com/vip/" class="button1" target="_blank" >芒果视频</a>
+<a href="https://www.1905.com/" class="button1" target="_blank" >电影网1905</a>  
+<a href="https://www.dy2018.com/" class="button1" target="_blank" >电影天堂</a>
+<a href="https://www.mvcat.com/" class="button1" target="_blank" >电影推荐</font></a>
+<a href="http://v.ranks.xin/" class="button1" target="_blank" >V视频助手</a>
+<a href="https://www.4ss.cc/" class="button1" target="_blank" >无水印下</a>
+<a href="http://www.weibodang.cn/" class="button1" target="_blank" >视频下载</a>
+<a href="http://www.ikukk.com/" class="button1" target="_blank" >爱酷看看</a>
+<a href="http://www.dvedit.cn/portal.php" class="button1" target="_blank" >视频剪辑</a>
+<a href="https://www.foodieguide.com/iptvsearch/" class="button1" target="_blank" >直播搜索</a>
+<a href="https://www.aliyundrive.com/s/mVTBz6t7M99/folder/612ddaf2cb9ae8b14c7d445dbe803904e1cf9db4" class="button1" target="_blank" >阿里明星</a>
+<a href="https://www.aliyundrive.com/s/pkDg223p9ko/folder/63cc37b97fc963562d7e4e078c3f15f8b686a983" class="button1" target="_blank" >阿里春晚</a>
+<a href="https://www.aliyundrive.com/s/kKHDZayRAow/folder/63e1e83b3cd9e2cc70af4d44936bf029837ff3f8" class="button1" target="_blank" >阿里影视</a>
+<a href="http://so.fulishe.live/" class="button1" target="_blank" >刚刚影视</a>
+<a href="https://jx.cainisi.cf/" class="button1" target="_blank" >莱 妮 丝</a>
+<a href="https://video.luochenzhimu.com/" class="button1" target="_blank" >视频JX1</a>
+<a href="https://vip.fxw.la/" class="button1" target="_blank" >视频JX2</a>
+<a href="https://parse.bqrdh.com/smart/" class="button1" target="_blank" >视频JX3</a>
+<a href="https://tool.lu/videoparser/" class="button1" target="_blank" >视频JX4</a>
+<a href="https://www.parsevideo.com/" class="button1" target="_blank" >视频JX5</a>
+<a href="https://search.bilibili.com/all?vt=73615368&keyword=%E4%B9%A1%E6%9D%91%E9%A3%9F%E5%8F%94" class="button1" target="_blank" >乡村食叔</a>
+<a href="https://www.youtube.com" class="button1" target="_blank" >Youtube</a>
+
+<div class="button-container">
+<div class="button01" >工·具</div>
+<a href="https://c.runoob.com/" class="button1" target="_blank" >菜鸟工具</a>
+<a href="https://tool.lu/" class="button1" target="_blank" >程序员工具</a>
+<a href="http://tools.jb51.net/static/colorpicker/" class="button1" target="_blank" >在线取色</a>
+<a href="https://www.bmcx.com/" class="button1" target="_blank" >便民查询</a>
+<a href="https://www.speedtest.net/" class="button1" target="_blank" >speedtest.net</a>
+<a href="https://www.speedtest.cn/" class="button1" target="_blank" >speed.cn测速</a>
+<a href="https://fast.com/" class="button1" target="_blank" >fast测速</a>
+<a href="https://link.gimhoy.com/" class="button1" target="_blank" >直链1.8</a>
+<a href="https://dash.cloudflare.com/" class="button1" target="_blank" >cloudflare</a>
+<a href="https://www.toolhelper.cn/Html/Preview" class="button1" target="_blank" >代码预览1</a>
+<a href="https://www.a4z.cn/tool/preview.html" class="button1" target="_blank" >代码预览2</a>
+<a href="https://tool.oschina.net/encrypt?type=3" class="button1" target="_blank" >加密/解密</a>
+<a href="http://ip111.cn/" class="button1" target="_blank" >查看ip111</a>
+<a href="https://ip.cn/" class="button1" target="_blank" >查看ip.cn</a>
+<a href="https://www.myip.com/" class="button1" target="_blank" >查看myip</a>
+<a href="https://ip38.com/" class="button1" target="_blank" >查看ip38</a>
+<a href="https://ip.skk.moe/" class="button1" target="_blank" >IP查询</a>
+<a href="http://datav.aliyun.com/portal/school/atlas/area_selector#&lat=31.840232667909365&lng=104.2822265625&zoom=4" class="button1" target="_blank" >地图选择</a>
+<a href="https://map.baidu.com/" class="button1" target="_blank" >百度地图</a>
+<a href="https://www.google.com/maps/" class="button1" target="_blank" >google地图</a>
+<a href="https://www.ffkuaidu.com/" class="button1" target="_blank" >转语音1</a>
+<a href="https://ttsmaker.com/zh-cn" class="button1" target="_blank" >转语音2</a>
+<a href="https://www.beautifulcarrot.com/" class="button1" target="_blank" >转手写体</a>
+<a href="https://picwish.cn/" class="button1" target="_blank" >一键抠图</a>
+<a href="https://bigjpg.com/" class="button1" target="_blank" >图片放大1</a>
+<a href="https://jpghd.com/" class="button1" target="_blank" >图片放大2</a>
+<a href="https://v2rayse.com/" class="button1" target="_blank" >科学工具</a>
+
+<div class="button-container">
+<div class="button01" >音·乐</div>
+<a href="https://www.toutiao.com/c/user/token/MS4wLjABAAAAJGqS4a4hcT4TzA2RzyXWUojHds1XvN1mOSnf5jG1uU8/?tab=video#mid=1581511017917454" class="button1" target="_blank" >东东音乐</a>
+<a href="http://www.kugou.com/" class="button1" target="_blank" >酷狗音乐</a>
+<a href="https://music.163.com/" class="button1" target="_blank" >网易音乐</a>
+<a href="https://www.xiami.com/" class="button1" target="_blank" >虾米音乐</a>
+<a href="http://www.kuwo.cn/" class="button1" target="_blank" >酷我音乐</a>
+<a href="https://www.1ting.com/" class="button1" target="_blank" >一听音乐</a>
+<a href="http://www.djhaiba.com/" class="button1" target="_blank" >D J 吧</a>
+<a href="https://y.qq.com/" class="button1" target="_blank" >QQ音乐</a>
+<a href="https://www.9ku.com/" class="button1" target="_blank" >九酷音乐</a>
+<a href="http://www.5nd.com/" class="button1" target="_blank" >5ND音乐</a>
+<a href="http://morin.feiyu.vin/" class="button1" target="_blank" >魔音morin</a>
+<a href="https://github.com/lyswhut/lx-music-desktop/releases" class="button1" target="_blank" >洛雪音乐</a>
+<a href="http://www.foobar2000.com.cn/" class="button1" target="_blank" >foobar2000</a>
+<a href="http://www.bbdj.com/" class="button1" target="_blank" >宝贝 DJ</a>
+
+<div class="button-container">
+<div class="button01" >论·坛</div>
+<a href="https://www.right.com.cn/forum/forum.php" class="button1" target="_blank" >恩山论坛</a>
+<a href="https://www.52pojie.cn/forum.php" class="button1" target="_blank" >吾爱论坛</a>
+<a href="https://www.zhihupe.com/ask.html" class="button1" target="_blank" >智狐论坛</a>
+<a href="https://www.aihao.cc/" class="button1" target="_blank" >爱好论坛</a>
+<a href="https://www.ilovematlab.cn" class="button1" target="_blank" >Matlab论坛</a>
+<a href="https://bbs.kafan.cn/forum.php" class="button1" target="_blank" >卡饭论坛</a>
+<a href="https://jike.info/" class="button1" target="_blank" >JIKE论坛</a>
+<a href="https://webact.185.hk/" class="button1" target="_blank" >网页激活</a>
+<a href="https://0xc004c008.com/" class="button1" target="_blank" >自助激活</a>
+<a href="http://tool.zhihupe.com/" class="button1" target="_blank" >智狐检测</a>
+
+<div class="button-container">
+<div class="button01" >商·城</div>
+<a href="https://www.taobao.com/" class="button1" target="_blank" >淘宝商城</a>
+<a href="https://www.tmall.com/" class="button1" target="_blank" >天猫商城</a>
+<a href="https://www.jd.com/" class="button1" target="_blank" >京东商城</a>
+<a href="http://www.smzdm.com" class="button1" target="_blank" >值 得 买</a>
+<a href="http://www.alimama.com" class="button1" target="_blank" >淘宝联盟</a>
+<a href="https://union.jd.com/index" class="button1" target="_blank" >京东联盟</a>
+<a href="http://www.dangdang.com" class="button1" target="_blank" >当当商城</a>
+<a href="https://www.mi.com/" class="button1" target="_blank" >小米商城</a>
+<a href="https://www.suning.com/" class="button1" target="_blank" >苏宁商城</a>
+<a href="https://www.pinduoduo.com/" class="button1" target="_blank" >拼 多 多</a>
+
+<div class="button-container">
+<div class="button01" >搜·译</div>
+<a href="https://www.baidu.com/" class="button1" target="_blank" >百度搜索</a>
+<a href="https://www.toutiao.com/search/?keyword=/" class="button1" target="_blank" >头条搜索</a>
+<a href="https://www.sogou.com/" class="button1" target="_blank" >搜狗搜索</a>
+<a href="https://www.so.com/" class="button1" target="_blank" >360搜索</a>
+<a href="https://cn.bing.com/" class="button1" target="_blank" >Bing搜索</a>
+<a href="https://www.google.com/" class="button1" target="_blank" >Google搜索</a>
+<a href="https://www.xiaomapan.com/#/main/search?restype=1" class="button1" target="_blank" >小马盘搜</a>
+<a href="https://fanyi.baidu.com/" class="button1" target="_blank" >百度翻译</a>
+<a href="http://fanyi.youdao.com/" class="button1" target="_blank" >有道翻译</a>
+<a href="https://translate.google.cn/" class="button1" target="_blank" >谷歌翻译</a>
+
+<div class="button-container">
+<div class="button01" >NBA</div>
+<a href="https://kbs.sports.qq.com/#nba" class="button1" target="_blank" >腾讯直播</a>
+<a href="http://sports.sina.com.cn/nba/" class="button1" target="_blank" >新浪体育</a>
+<a href="http://www.310.tv/" class="button1" target="_blank" >310直播</a>
+<a href="http://sports.cctv.com/nba/videos/" class="button1" target="_blank" >cctv-NBA</a>
+<a href="http://www.926.tv/" class="button1" target="_blank" >926体育</a>
+<a href="http://www.zhiboche.com/" class="button1" target="_blank" >直 播 车</a>
+<a href="http://nba.hupu.com/" class="button1" target="_blank" >虎扑篮球</a>
+<a href="https://www.zhibo8.net/" class="button1" target="_blank" >直 播 8</a>
+<a href="http://www.jrszhibo2018.com/" class="button1" target="_blank" >JRS直播</a>
+<a href="http://www.jrkankan.com/" class="button1" target="_blank" >JRSK直播</a>
+<a href="http://www.88kanqiu.cc/" class="button1" target="_blank" >88 看球</a>
+
+<div class="button-container">
+<div class="button01" >其·它</div>  <!--    模块隔离    -->
+<a href="https://news.sina.com.cn/" class="button1" target="_blank" >新浪新闻</a>
+<a href="https://news.ifeng.com/" class="button1" target="_blank" >凤  凰  网</a>
+<a href="http://news.sohu.com/" class="button1" target="_blank" >搜狐新闻</a>
+<a href="https://www.huanqiu.com/" class="button1" target="_blank" >环 球 网</a>
+<a href="https://www.win7china.com/" class="button1" target="_blank" >W7之家</a>
+<a href="https://www.nruan.com/" class="button1" target="_blank" >N 软 网</a>
+<a href="https://news.ceic.ac.cn/index.html?time=1622407542" class="button1" target="_blank" >地震台网</a>
+<a href="https://linshiyouxiang.net/" class="button1" target="_blank" >临时邮箱</a>
+<a href="https://www.sms4u.vip/" class="button1" target="_blank" >接码平台</a>
+<a href="https://l8gvnc-1338.csb.app/chat/" class="button1" target="_blank" >ChatGPT-自建</a>
+<a href="https://chat.ramxn.dev/chat/" class="button1" target="_blank" >ChatGPT-ram</a>
+<a href="https://ai.ls/" class="button1" target="_blank" >ChatGPT-ai1</a>
+<a href="https://ai.ci/" class="button1" target="_blank" >ChatGPT-ai2</a>
+<a href="https://desk.im/" class="button1" target="_blank" >ChatGPT-ai3</a>
+<a href="https://chatforai.com/" class="button1" target="_blank" >ChatGPT-ai4</a>
+<a href="https://bing.vcanbb.top/web/#/" class="button1" target="_blank" >必应聊天</a>
+<a href="https://checkadblock.ru/" class="button1" target="_blank" >广告测试</a>
+<a href="http://www.10086.cn/index/yn/index_871_872.html" class="button1" target="_blank" >云南移动</a>
+<a href="http://www.189.cn/" class="button1" target="_blank" >云南电信</a>
+<a href="https://time.is/zh/" class="button1" target="_blank" >在线时间</a>
+
+<div class="button-container">
+<div class="button01" >下·载</div>  <!--    模块隔离    -->
+<a href="https://microsoftedge.microsoft.com/addons/Microsoft-Edge-Extensions-Home?hl=zh-CN" class="button1" target="_blank" >微软商店</a>
+<a href="https://chrome.google.com/webstore/category/extensions?h1=zh" class="button1" target="_blank" >google商店</a>
+<a href="https://msdn.itellyou.cn/" class="button1" target="_blank" >M S D N</a>
+<a href="https://www.chrome666.com/" class="button1" target="_blank" >仿谷歌商店</a>
+<a href="https://acnpfovj-my.sharepoint.com/:f:/g/personal/zhangjd_zm_cx/EgCqPJ5k3uhNpW-nHGB4vbwBIzkd5g2pHc6KZ3_lC5ovzw?e=vggjek#dongdong" class="button1" target="_blank" >东东软件</a>
+<a href="https://wszx01.lanzout.com/b047omtre#dddd" class="button1" target="_blank" >TVBox-app</a>
+<a href="https://wszx01.lanzout.com/b047omrbg#dddd" class="button1" target="_blank" >直播app</a>
+<a href="https://wszx01.lanzout.com/b047omy3a#dddd" class="button1" target="_blank" >成品app</a>
+<a href="https://www.aliyundrive.com/s/aShaWn9MEDv" class="button1" target="_blank" >阿 里 盘</a>
+<a href="https://www.123pan.com/s/7P37Vv-XuyoA.html#dddd" class="button1" target="_blank" >123软件</a>
+<a href="https://cloud.189.cn/" class="button1" target="_blank" >天翼云盘</a>
+<a href="https://115.com/" class="button1" target="_blank" >115网盘</a>
+<a href="http://52bsj.vip:81/" class="button1" target="_blank" >52bsj盘</a>
+<a href="https://demo.ifile.space/" class="button1" target="_blank" >ifile 盘</a>
+<a href="https://pastebin.com/" class="button1" target="_blank" >pastebin盘</a>
+<a href="https://www.360.cn/" class="button1" target="_blank" >360软件</a>
+<a href="https://im.qq.com/" class="button1" target="_blank" >QQ软件</a>
+<a href="https://pinyin.sogou.com/" class="button1" target="_blank" >搜狗拼音</a>
+<a href="https://www.423down.com/" class="button1" target="_blank" >423down</a>
+<a href="https://www.zdfans.com/" class="button1" target="_blank" >zd 423</a>
+<a href="https://github.com/yoyodadada/haoruanfenxiang/blob/master/List.md" class="button1" target="_blank" >好软分享</a>
+<a href="https://www.ghxi.com/" class="button1" target="_blank" >果核剥壳</a>
+<a href="http://m.wmsio.cn/nd.jsp?mid=5&id=23" class="button1" target="_blank" >盒子 TV</a>
+<a href="https://www.xingkbjm.com/" class="button1" target="_blank" >星空软件</a>
+<a href="https://www.fenxm.com/" class="button1" target="_blank" >分 享 迷</a>
+<a href="https://www.yrxitong.com/" class="button1" target="_blank" >鱼儿系统</a>
+<a href="http://potplayer.tv/?lang=zh_CN" class="button1" target="_blank" >potplayer</a>
+<a href="https://sourceforge.net/projects/mpcbe/" class="button1" target="_blank" >MPC-BE</a>
+<a href="https://mpc-hc.org/" class="button1" target="_blank" >mpc-hc</a>
+<a href="https://www.rizonesoft.com/downloads/notepad3/" class="button1" target="_blank" >notepad3</a>
+<a href="https://bbs.huorong.cn/" class="button1" target="_blank" >火绒安全</a>
+<a href="https://www.kmplayer.com/pc" class="button1" target="_blank" >kmplayer</a>
+<a href="https://github.com/Hiram-Wong/ZyPlayer" class="button1" target="_blank" >ZyPlayer</a>
+<a href="http://www.cr-soft.net/crtubeget.html" class="button1" target="_blank" >crtubeget</a>
+<a href="https://cn.bandisoft.com/" class="button1" target="_blank" >Bandizip</a>
+<a href="https://www.rarlab.com/download.htm" class="button1" target="_blank" >rarlab压缩</a>
+<a href="'https://www.360totalsecurity.com/zh-cn/360zip/" class="button1" target="_blank" >360 压缩</a>
+<a href="https://www.7-zip.org/" class="button1" target="_blank" >7zip压缩</a>
+<a href="https://www.disktool.cn/" class="button1" target="_blank" >傲梅分区</a>
+<a href="http://internetdownloadmanager.com/download.html" class="button1" target="_blank" >IDM下载</a>
+<a href="http://www.55tools.com/index.html" class="button1" target="_blank" >宏杰加密</a>
+<a href="https://weixin.qq.com/" class="button1" target="_blank" >微信电脑版</a>
+<a href="http://www.443w.com/tts/" class="button1" target="_blank" >朗 读 女</a>
+<a href="https://www.microsoft.com/zh-cn/software-download/windows11" class="button1" target="_blank" >下载W11</a>
+<a href="https://www.microsoft.com/zh-cn/software-download/windows10" class="button1" target="_blank" >下载W10</a>
+<a href="https://www.microsoft.com/zh-cn/edge" class="button1" target="_blank" >edge下载</a>
+<a href="http://idman.ys168.com/" class="button1" target="_blank" >IDM分享</a>
+<a href="https://www.ccleaner.com/ccleaner/download/portable" class="button1" target="_blank" >ccleaner</a>
+<a href="https://www.xunlei.com/" class="button1" target="_blank" >迅雷下载</a>
+<a href="https://github.com/zufuliu/notepad2/releases" class="button1" target="_blank" >notepad2</a>
+<a href="http://www.pcfreetime.com/formatfactory/CN/index.html" class="button1" target="_blank" >格式工产</a>
+<a href="https://www.voidtools.com/zh-cn/" class="button1" target="_blank" >Everything</a>
+<a href="https://www.screentogif.com/?l=zh_cn" class="button1" target="_blank" >screentoGIF</a>
+<a href="https://zh.snipaste.com/" class="button1" target="_blank" >snipaste</a>
+<a href="https://anytxt.net/download/" class="button1" target="_blank" >AnyTXT搜索</a>
+<a href="https://github.com/Netflixxp/N1HK1dabao" class="button1" target="_blank" >N1 盒子</a>
+<a href="https://www.wepe.com.cn/" class="button1" target="_blank" >WP工具箱</a>
+<a href="https://www.ventoy.net/cn/index.html" class="button1" target="_blank" >ventoy制作</a>
+<a href="https://www.balena.io/etcher/" class="button1" target="_blank" >U盘启动</a>
+<a href="https://github.com/wangfreexx/wangfreexx-tianruoocr-cl-paddle/releases" class="button1" target="_blank" >天若OCR</a>
+<a href="http://www.xinshuru.com/index.html?p=win" class="button1" target="_blank" >手心输入</a>
+<a href="https://github.com/gedoor/legado" class="button1" target="_blank" >阅    读</a>
+<a href="http://shuyuan.miaogongzi.net/" class="button1" target="_blank" >书源分享</a>
+<a href="https://www.vmware.com/cn.html" class="button1" target="_blank" >vm虚拟机</a>
+<a href="https://www.123pan.com/s/A6cA-5GAJh" class="button1" target="_blank" >雷电模拟</a>
+<a href="https://www.virtualbox.org/wiki/Downloads" class="button1" target="_blank" >virtualbox</a>
+<a href="https://www.yeshen.com/" class="button1" target="_blank" >夜神模拟器</a>
+<a href="https://www.applnn.cc/" class="button1" target="_blank" >applnn分享</a>
+<a href="https://www.wireguard.com/" class="button1" target="_blank" >wireguard</a>
+
+<div class="button-container">
+<div class="button01" >读·写</div>  <!--    模块隔离    -->
+<a href="http://www.shenniaotv.com/" class="button1" target="_blank" >神鸟电视</a>
+<a href="https://www.hongxiu.com/" class="button1" target="_blank" >红袖读书</a>
+<a href="https://www.qidian.com/" class="button1" target="_blank" >起点中文网</a>
+<a href="https://www.ximalaya.com/" class="button1" target="_blank" >喜马拉雅</a>
+<a href="http://www.diyifanwen.com/" class="button1" target="_blank" >第一范文</a>
+<a href="http://www.xiangdang.net/" class="button1" target="_blank" >香 当 网</a>
+<a href="https://www.kancloud.cn/explore" class="button1" target="_blank" >看    云</a>
+<a href="https://www.ynzs.cn/" class="button1" target="_blank" >云南招考</a>
+<a href="https://www.ynzs.cn/score/gkresult.html" class="button1" target="_blank" >录取查询</a>
+<a href="https://gk.ynzs.cn/views/student/student_index.html" class="button1" target="_blank" >填报志愿</a>
+<a href="http://www.youshiyun.com.cn/" class="button1" target="_blank" >优 思 云</a>
+<a href="http://hbttwhcb.com/" class="button1" target="_blank" >梯田文化</a>
+<a href="https://www.jiakaobaodian.com/mnks/kemu1/car-dali.html" class="button1" target="_blank" >驾考宝典</a>
+<a href="https://mnks.jxedt.com/?cartype=xc&kemutype=1" class="button1" target="_blank" >驾校一点通</a>
+
+<!-- body   页脚    -->
+<div class="footer">
+
+<br/>
+<b>版本号：CN-YNDL20230701-01</b><br /> 
+&copy;wszxZJD 云DL备20230701号<br /> 
+
+</body>
+</html>
