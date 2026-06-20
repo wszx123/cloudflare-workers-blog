@@ -33,7 +33,6 @@ const OPT = { //网站配置
   "cacheTime" : 60*60*24*2, //文章在浏览器的缓存时长(秒),建议=文章更新频率
   "html404" : `<b>404</b>`,//404页面代码
   "codeBeforHead":`
-  <script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
   `,//其他代码,显示在</head>前
   "codeBeforBody":`
   `,//其他代码,显示在</body>前
@@ -148,6 +147,9 @@ Disallow: /admin`,//robots.txt设置
     `, //后台编辑页面脚本
 
 };
+
+//复用同一 Worker 实例中的主题源码，减少不同页面首次渲染时的外部请求。
+const THEME_HTML_CACHE=new Map();
 
 //---对部分配置进行处理---
 {
@@ -264,7 +266,7 @@ async function handlerRequest(event){
     if("admin"==paths[0]||"api"==paths[0]){
       k.headers.set("Cache-Control","no-store")
     }else{
-      k.headers.set("Cache-Control","public, max-age="+OPT.cacheTime),
+      k.headers.set("Cache-Control","public, max-age="+OPT.cacheTime+", stale-while-revalidate=86400"),
       event.waitUntil(D.put(M,k.clone()))
     }
   }catch(e){}
@@ -335,13 +337,13 @@ async function hashText(value){
 // 公开留言接口：审核通过的留言可读，提交后进入待审核状态。
 async function handle_comments(request,target){
   if("GET"==request.method){
-    const comments=await getComments();
     if("recent"==target){
-      const settings=await getCommentSettings();
+      const [comments,settings]=await Promise.all([getComments(),getCommentSettings()]);
       if(!settings.recentEnabled) return apiJson({rst:true,enabled:false,comments:[]});
       return apiJson({rst:true,enabled:true,comments:comments.filter(item=>"approved"==item.status).slice(0,5).map(publicComment)});
     }
     if(!/^\d{6}$/.test(target||"")) return apiJson({rst:false,msg:"文章 ID 无效"},400);
+    const comments=await getComments();
     return apiJson({
       rst:true,
       comments:comments.filter(item=>item.articleId==target&&"approved"==item.status).map(publicComment)
@@ -547,13 +549,10 @@ async function renderBlog(url){
   console.log("theme pageSize",OPT.pageSize,OPT.themeURL)
   
   //获取主页模板源码
-  let theme_html=await getThemeHtml("index"),
-      //KV中读取导航栏、分类目录、标签、链接、所有文章、近期文章等配置信息
-      menus=await getWidgetMenu(),
-      categories=await getWidgetCategory(),
-      tags=await getWidgetTags(),
-      links=await getWidgetLink(),
-      articles_all=await getArticlesList(),
+  //主题和各项 KV 数据互不依赖，并行读取可显著降低首次渲染时间。
+  const [theme_html,menus,categories,tags,links,articles_all]=await Promise.all([
+    getThemeHtml("index"),getWidgetMenu(),getWidgetCategory(),getWidgetTags(),getWidgetLink(),getArticlesList()
+  ]),
       articles_recently=await getRecentlyArticles(articles_all);
   
   /** 前台博客
@@ -598,6 +597,7 @@ async function renderBlog(url){
   
   //处理文章属性（年月日、url等）
   processArticleProp(articles_show);
+  if(articles_show[0]) articles_show[0].isFirst=true;
 
   // console.log(url.pathname)
   let url_prefix = url.pathname.replace(/(.*)\/page\/\d+/,'$1/')
@@ -647,17 +647,16 @@ async function renderBlog(url){
 
 //渲染前端博客的文章内容页
 async function handle_article(id){
-  //获取内容页模板源码
-  let theme_html=await getThemeHtml("article"),
-      //KV中读取导航栏、分类目录、标签、链接、近期文章等配置信息
-      menus=await getWidgetMenu(),
-      categories=await getWidgetCategory(),
-      tags=await getWidgetTags(),
-      links=await getWidgetLink(),
-      articles_recently=await getRecentlyArticles();
-
-  //获取上篇、本篇、下篇文章
-  let articles_sibling=await getSiblingArticle(id);
+  id=("00000"+parseInt(id)).substr(-6);
+  //并行获取主题、部件、文章索引和正文，避免串行等待多个网络往返。
+  const [theme_html,menus,categories,tags,links,articles_all,articleCurrent]=await Promise.all([
+    getThemeHtml("article"),getWidgetMenu(),getWidgetCategory(),getWidgetTags(),getWidgetLink(),getArticlesList(),getArticle(id)
+  ]),
+      articles_recently=await getRecentlyArticles(articles_all),
+      articleIndex=articles_all.findIndex(article=>article.id==id),
+      articles_sibling=null==articleCurrent?[void 0,void 0,void 0]:[
+        articles_all[articleIndex-1],articleCurrent,articles_all[articleIndex+1]
+      ];
   
   //处理文章属性（年月日、url等）
   processArticleProp(articles_sibling);
@@ -704,12 +703,9 @@ async function handle_admin(request){
   //新建页
   if(1==paths.length||"list"==paths[1]){
     //读取主题的admin/index.html源码
-    let theme_html=await getThemeHtml("admin/index"),
-        //KV中读取导航栏、分类目录、链接、近期文章等配置信息
-        categoryJson=await getWidgetCategory(),
-        menuJson=await getWidgetMenu(),
-        linkJson=await getWidgetLink(),
-        commentSettingsJson=await getCommentSettings();
+    const [theme_html,categoryJson,menuJson,linkJson,commentSettingsJson]=await Promise.all([
+      getThemeHtml("admin/index"),getWidgetCategory(),getWidgetMenu(),getWidgetLink(),getCommentSettings()
+    ]);
     
     //手动替换<!--{xxx}-->格式的参数
     html = theme_html.replaceHtmlPara("categoryJson",JSON.stringify(categoryJson))
@@ -769,13 +765,12 @@ async function handle_admin(request){
   
   //修改文章
   if("edit"==paths[1]){
-    let id=paths[2],
-        //获取主题admin/edit源码
-        theme_html=await getThemeHtml("admin/edit"),
-        //KV中读取分类
-        categoryJson=JSON.stringify(await getWidgetCategory()),
-        //KV中读取文章内容
-        articleJson=JSON.stringify(await getArticle(id));
+    let id=paths[2];
+    const [theme_html,categoryValue,articleValue]=await Promise.all([
+      getThemeHtml("admin/edit"),getWidgetCategory(),getArticle(id)
+    ]),
+        categoryJson=JSON.stringify(categoryValue),
+        articleJson=JSON.stringify(articleValue);
     
     //手动替换<!--{xxx}-->格式的参数
     html = theme_html.replaceHtmlPara("categoryJson",categoryJson).replaceHtmlPara("articleJson",articleJson.replaceAll("script>","script＞"))
@@ -1225,13 +1220,16 @@ function processArticleProp(articles){
 //获取前台模板源码, template_path:模板的相对路径
 async function getThemeHtml(template_path){
   template_path=template_path.replace(".html","")
+  const cacheKey=OPT.themeURL+template_path,
+      cached=THEME_HTML_CACHE.get(cacheKey);
+  if(cached&&cached.expires>Date.now()) return cached.html;
   let html = await (await fetch(OPT.themeURL+template_path+".html",{cf:{cacheTtl:600}})).text();
   
   //对后台编辑页下手
   if("admin/index|admin/editor".includes(template_path)){
       html = html.replace("$('#WidgetCategory').val(JSON.stringify(categoryJson))",OPT.editor_page_scripts+"$('#WidgetCategory').val(JSON.stringify(categoryJson))")
   }
-  
+  THEME_HTML_CACHE.set(cacheKey,{html:html,expires:Date.now()+5*60*1000});
   return html
 }
 
@@ -1350,7 +1348,6 @@ async function generateId(){
 
 //KV读取，toJson是否转为json，默认false
 async function getKV(key, toJson=false){
-  console.log("------------KV读取------------key,toJson:", key, toJson);
   let value=await CFBLOG.get(key);
   if(!toJson)
     return null==value?"[]":value;
