@@ -8,24 +8,18 @@
 		<title>{{ &title }}</title>
 		<meta name="keywords" content="{{ &keyWords }}" />
 		<meta name="description" content="{{ &OPT.siteDescription }}" />
+		<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+		<link rel="preconnect" href="https://img.mypi.co" crossorigin>
+		<link rel="dns-prefetch" href="//cdn.jsdelivr.net">
                 <link rel="shortcut icon" href="https://img.mypi.co/9527abc/83bfade0ce5b2165f3149f116f09dcfd.png">
 		
 		<link rel='stylesheet' id='stylesheet-css' href='{{ &OPT.theme_github_path }}JustNews/files/main.css' type='text/css' media='all' />
 		<link rel='stylesheet' id='font-awesome-css' href='{{ &OPT.theme_github_path }}JustNews/files/font-awesome.css?ver=6.1.2' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-block-library-css' href='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/css/dist/block-library/style.min.css?ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-components-css' href='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/css/dist/components/style.min.css?ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-editor-font-css' href='https://fonts.geekzu.org/css?family=Noto+Serif%3A400%2C400i%2C700%2C700i&#038;ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-block-editor-css' href='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/css/dist/block-editor/style.min.css?ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-nux-css' href='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/css/dist/nux/style.min.css?ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-editor-css' href='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/css/dist/editor/style.min.css?ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='mux_video_block_style-css' href='https://cdn.jsdelivr.net/gh/newexsexy/wp@master/wp-content/plugins/ilab-media-tools/public/blocks/mediacloud-mux.blocks.style.min.css' type='text/css' media='all' />
 		
 		<link rel='stylesheet' id='emojify-css' href='https://cdn.jsdelivr.net/npm/emojify.js@1.1.0/dist/css/basic/emojify.min.css?ver=1.1.0' type='text/css' media='all' />
 		<script type='text/javascript' src='https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js?ver=3.5.1' id='jquery-core-js'></script>
 		<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.6/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2' id='jquery-migrate-js'></script>
 		<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/wpcom-cn/assets/fonts/icons-2.6.4.js?ver=6.1.2' id='wpcom-icons-js'></script>
-		<link rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.3.2/styles/tomorrow-night-bright.min.css">
-		<script src='https://cdn.staticfile.org/highlight.js/10.3.2/highlight.min.js'></script>
 		<style>
 			.simple-comment-board{margin-top:25px;padding:24px;background:#fff;border-top:1px solid #eee}
 			.simple-comment-board h3{margin:0 0 18px}
@@ -54,11 +48,11 @@
 					</button>
 					<div class="logo">
 						{{ #OPT.logo }}
-						<a href="/" rel="home"><img src="{{ &OPT.logo }}" alt="{{ &OPT.siteName }}"></a>
+						<a href="/" rel="home"><img src="{{ &OPT.logo }}" alt="{{ &OPT.siteName }}" decoding="async" fetchpriority="high"></a>
 						{{ /OPT.logo }}
 						
 						{{ ^OPT.logo }}
-						<a href="/" rel="home"><img src="{{ &OPT.theme_github_path }}JustNews3/files/logo04.png" alt="请自定义OPT.logo"></a>
+						<a href="/" rel="home"><img src="{{ &OPT.theme_github_path }}JustNews3/files/logo04.png" alt="请自定义OPT.logo" decoding="async" fetchpriority="high"></a>
 						{{ /OPT.logo }}
 					</div>
 				</div>
@@ -171,7 +165,7 @@
 							<li class="item">
 								<div class="item-img">
 									<a class="item-img-inner" href="{{ &url }}" title="{{ &title }}">
-										<img width="480" height="264" src="{{ &img }}" class="attachment-post-thumbnail size-post-thumbnail wp-post-image j-lazy" alt="" title="" data-original="{{ &img }}" /></a>
+										<img width="480" height="264" src="{{ &img }}" class="attachment-post-thumbnail size-post-thumbnail wp-post-image j-lazy" alt="" title="" data-original="{{ &img }}" loading="lazy" decoding="async" /></a>
 								</div>
 								<div class="item-content">
 									<p class="item-title">
@@ -245,7 +239,6 @@ var _wpcom_js = {"webp":"","ajaxurl":"","theme_url":"{{ &OPT.theme_github_path }
 /* ]]> */
 </script>
 <script type='text/javascript' src='{{ &OPT.theme_github_path }}JustNews/files/main.js?ver=6.1.2' id='main-js'></script>
-<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.6/wp-includes/js/comment-reply.min.js?ver=5.6' id='comment-reply-js'></script>
 <script type='text/javascript' src='https://cdn.jsdelivr.net/gh/idiotWu/jQuery-TOC@0.0.6/dist/jquery.toc.min.js?ver=1.0.1' id='githuber-toc-js'></script>
 <script type='text/javascript' src='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/js/clipboard.min.js?ver=5.6' id='clipboard-js'></script>
 <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/emojify.js@1.1.0/dist/js/emojify.min.js?ver=1.1.0' id='emojify-js'></script>
@@ -282,8 +275,19 @@ var fifuImageVars = {"fifu_lazy":"1","fifu_woo_lbox_enabled":"1","fifu_woo_zoom"
 					});
 				})(jQuery);
 			</script>
-<script>hljs.initHighlightingOnLoad(); //代码高亮
-					</script>
+<script>
+(function(){
+	if(!document.querySelector('pre code')) return;
+	var style=document.createElement('link');
+	style.rel='stylesheet';
+	style.href='https://cdn.staticfile.org/highlight.js/10.3.2/styles/tomorrow-night-bright.min.css';
+	document.head.appendChild(style);
+	var script=document.createElement('script');
+	script.src='https://cdn.staticfile.org/highlight.js/10.3.2/highlight.min.js';
+	script.onload=function(){document.querySelectorAll('pre code').forEach(function(block){hljs.highlightBlock(block);});};
+	document.body.appendChild(script);
+})();
+</script>
 		<script>
 		(function () {
 			var container = document.querySelector('.article-heat');
@@ -367,7 +371,14 @@ var fifuImageVars = {"fifu_lazy":"1","fifu_woo_lbox_enabled":"1","fifu_woo_zoom"
 					.catch(function(){status.textContent='留言提交失败，请稍后重试';})
 					.then(function(){button.disabled=false;});
 			});
-			loadComments();
+			if('IntersectionObserver' in window){
+				var observer=new IntersectionObserver(function(entries){
+					if(entries[0].isIntersecting){observer.disconnect();loadComments();}
+				},{rootMargin:'300px'});
+				observer.observe(board);
+			}else{
+				loadComments();
+			}
 		})();
 		</script>
 		<script>
