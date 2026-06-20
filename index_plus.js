@@ -22,7 +22,7 @@ const OPT = { //网站配置
   "logo":"https://s123.qzz.io/folder_img-logo_1781952002765_logo.png",//JustNews主题的logo
 
   "theme_github_path":"https://cdn.jsdelivr.net/gh/Arronlong/cfblog-plus@master/themes/",//主题路径
-  "themeURL" : "https://raw.githubusercontent.com/Arronlong/cfblog-plus/master/themes/JustNews/", // 模板地址,以 "/"" 结尾
+  "themeURL" : "https://raw.githubusercontent.com/wszx123/cloudflare-workers-blog/master/themes/JustNews4/", // 模板地址,以 "/"" 结尾，自用模板【1修正导入，2添加浏览量显示和3评论功能】
   //"search_xml_url":"", //search.xml外部链接，可通过github的action自动生成，不设置则实时生成
   //"sitemap_xml_url":"", //sitemap.xml外部链接，可通过github的action自动生成，不设置则实时生成
   
@@ -202,10 +202,14 @@ async function handlerRequest(event){
       M="https://"+OPT.siteDomain+url.pathname,
       x=new Request(M, request);
   console.log("cacheFullPath:",M);
-  let k=await D.match(x);
-  if(k){
-    console.log("hit cache!")
-    return k;
+  let k;
+  // 浏览量接口必须实时读写，不能命中页面缓存。
+  if("api"!=paths[0]){
+    k=await D.match(x);
+    if(k){
+      console.log("hit cache!")
+      return k;
+    }
   }
 
   switch(paths[0]){
@@ -223,6 +227,18 @@ async function handlerRequest(event){
       break;
     case "admin": //后台
       k = await handle_admin(request);
+      break;
+    case "api": //公开接口
+      if("views"==paths[1]){
+        k = await handle_views(request,paths[2]);
+      }else if("comments"==paths[1]){
+        k = await handle_comments(request,paths[2]);
+      }else{
+        k = new Response('{"msg":"api not found","rst":false}',{
+          headers:{"content-type":"application/json;charset=UTF-8"},
+          status:404
+        });
+      }
       break;
     case "article": //文章内容页
       k = await handle_article(paths[1]);
@@ -245,7 +261,7 @@ async function handlerRequest(event){
   }  
   //设置浏览器缓存时间:后台不缓存、只缓存前台
   try{
-    if("admin"==paths[0]){
+    if("admin"==paths[0]||"api"==paths[0]){
       k.headers.set("Cache-Control","no-store")
     }else{
       k.headers.set("Cache-Control","public, max-age="+OPT.cacheTime),
@@ -257,6 +273,138 @@ async function handlerRequest(event){
 }
 
 /**------【③.分而治之：各种请求分开处理】-----**/
+
+// 文章浏览量：GET 批量读取，POST 累加单篇文章。
+async function handle_views(request,id){
+  const headers={
+    "content-type":"application/json;charset=UTF-8",
+    "Cache-Control":"no-store"
+  };
+
+  if("POST"==request.method){
+    if(!/^\d{6}$/.test(id||"")){
+      return new Response('{"msg":"invalid article id","rst":false}',{headers:headers,status:400});
+    }
+    const key="SYSTEM_VIEW_"+id,
+        oldValue=parseInt(await CFBLOG.get(key),10),
+        views=(isNaN(oldValue)?0:oldValue)+1;
+    await CFBLOG.put(key,String(views));
+    return new Response(JSON.stringify({rst:true,id:id,views:views}),{headers:headers,status:200});
+  }
+
+  if("GET"==request.method){
+    const url=new URL(request.url),
+        ids=(url.searchParams.get("ids")||"").split(",").filter(id=>/^\d{6}$/.test(id)).slice(0,100),
+        values=await Promise.all(ids.map(id=>CFBLOG.get("SYSTEM_VIEW_"+id))),
+        views={};
+    for(let i=0;i<ids.length;i++){
+      const value=parseInt(values[i],10);
+      views[ids[i]]=isNaN(value)?0:value;
+    }
+    return new Response(JSON.stringify({rst:true,views:views}),{headers:headers,status:200});
+  }
+
+  return new Response('{"msg":"method not allowed","rst":false}',{headers:headers,status:405});
+}
+
+function apiJson(data,status=200){
+  return new Response(JSON.stringify(data),{
+    headers:{"content-type":"application/json;charset=UTF-8","Cache-Control":"no-store"},
+    status:status
+  });
+}
+
+function publicComment(comment){
+  return {
+    id:comment.id,
+    articleId:comment.articleId,
+    articleTitle:comment.articleTitle,
+    nickname:comment.nickname,
+    website:comment.website,
+    content:comment.content,
+    createdAt:comment.createdAt
+  };
+}
+
+async function hashText(value){
+  const bytes=new TextEncoder().encode(value),
+      digest=await crypto.subtle.digest("SHA-256",bytes);
+  return Array.from(new Uint8Array(digest)).map(value=>value.toString(16).padStart(2,"0")).join("");
+}
+
+// 公开留言接口：审核通过的留言可读，提交后进入待审核状态。
+async function handle_comments(request,target){
+  if("GET"==request.method){
+    const comments=await getComments();
+    if("recent"==target){
+      const settings=await getCommentSettings();
+      if(!settings.recentEnabled) return apiJson({rst:true,enabled:false,comments:[]});
+      return apiJson({rst:true,enabled:true,comments:comments.filter(item=>"approved"==item.status).slice(0,5).map(publicComment)});
+    }
+    if(!/^\d{6}$/.test(target||"")) return apiJson({rst:false,msg:"文章 ID 无效"},400);
+    return apiJson({
+      rst:true,
+      comments:comments.filter(item=>item.articleId==target&&"approved"==item.status).map(publicComment)
+    });
+  }
+
+  if("POST"!=request.method) return apiJson({rst:false,msg:"请求方式不允许"},405);
+  if(!/^\d{6}$/.test(target||"")) return apiJson({rst:false,msg:"文章 ID 无效"},400);
+
+  try{
+    const input=await request.json(),
+        nickname=String(input.nickname||"").trim(),
+        email=String(input.email||"").trim().toLowerCase(),
+        content=String(input.content||"").trim(),
+        settings=await getCommentSettings();
+    let website=String(input.website||"").trim();
+
+    if(!nickname||nickname.length>30) return apiJson({rst:false,msg:"昵称为必填项，最多 30 字"},400);
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>100) return apiJson({rst:false,msg:"请输入有效邮箱"},400);
+    if(!content||Array.from(content).length>100) return apiJson({rst:false,msg:"留言内容为必填项，最多 100 字"},400);
+    if(/^\d+$/.test(content)||/^[A-Za-z]+$/.test(content)) return apiJson({rst:false,msg:"留言不能是纯数字或纯字母"},400);
+    const blocked=(settings.blockedKeywords||[]).find(keyword=>keyword&&content.toLowerCase().includes(String(keyword).toLowerCase()));
+    if(blocked) return apiJson({rst:false,msg:"留言包含禁止关键词"},400);
+
+    if(website){
+      try{
+        const parsed=new URL(website);
+        if(!["http:","https:"].includes(parsed.protocol)) throw new Error();
+        website=parsed.href;
+      }catch(error){
+        return apiJson({rst:false,msg:"请输入有效网址"},400);
+      }
+    }
+
+    const article=await getArticle(target);
+    if(!article||!article.id) return apiJson({rst:false,msg:"文章不存在"},404);
+
+    const ip=request.headers.get("CF-Connecting-IP")||"unknown",
+        rateKey="SYSTEM_COMMENT_RATE_"+await hashText(ip);
+    if(await CFBLOG.get(rateKey)) return apiJson({rst:false,msg:"同一 IP 每小时只能留言一次"},429);
+
+    const comments=await getComments(),
+        random=new Uint32Array(1);
+    crypto.getRandomValues(random);
+    comments.unshift({
+      id:Date.now().toString(36)+random[0].toString(36),
+      articleId:target,
+      articleTitle:String(article.title||""),
+      nickname:nickname,
+      email:email,
+      website:website,
+      content:content,
+      createdAt:new Date().toISOString(),
+      status:"pending"
+    });
+    await saveComments(comments);
+    await CFBLOG.put(rateKey,"1",{expirationTtl:3600});
+    return apiJson({rst:true,msg:"留言已提交，审核通过后显示"});
+  }catch(error){
+    console.error("提交留言失败",error);
+    return apiJson({rst:false,msg:"留言提交失败"},500);
+  }
+}
 
 //访问: favicon.ico
 async function handle_favicon(request){
@@ -560,12 +708,14 @@ async function handle_admin(request){
         //KV中读取导航栏、分类目录、链接、近期文章等配置信息
         categoryJson=await getWidgetCategory(),
         menuJson=await getWidgetMenu(),
-        linkJson=await getWidgetLink();
+        linkJson=await getWidgetLink(),
+        commentSettingsJson=await getCommentSettings();
     
     //手动替换<!--{xxx}-->格式的参数
     html = theme_html.replaceHtmlPara("categoryJson",JSON.stringify(categoryJson))
                     .replaceHtmlPara("menuJson",JSON.stringify(menuJson))
                     .replaceHtmlPara("linkJson",JSON.stringify(linkJson))
+                    .replaceHtmlPara("commentSettingsJson",JSON.stringify(commentSettingsJson))
                     
     //添加后台首页配置
     if(OPT.admin_home_idx && OPT.admin_home_idx>=1 && OPT.admin_home_idx<=4){
@@ -636,16 +786,50 @@ async function handle_admin(request){
     const ret=await parseReq(request);
     let widgetCategory=ret.WidgetCategory,//分类
         widgetMenu=ret.WidgetMenu,//导航
-        widgetLink=ret.WidgetLink;//链接
+        widgetLink=ret.WidgetLink,//链接
+        commentSettings={
+          blockedKeywords:String(ret.commentKeywords||"").split(/[，,\n]/).map(value=>value.trim()).filter(Boolean),
+          recentEnabled:"0"!==ret.recentCommentsEnabled
+        };
     
     //判断格式，写入分类、导航、链接到KV中
     if(checkFormat(widgetCategory) && checkFormat(widgetMenu) && checkFormat(widgetLink)){
       let success = await saveWidgetCategory(widgetCategory)
       success = success && await saveWidgetMenu(widgetMenu)
       success = success && await saveWidgetLink(widgetLink)
+      success = success && await saveCommentSettings(commentSettings)
       json = success ? '{"msg":"saved","rst":true}' : '{"msg":"Save Faild!!!","ret":false}'
     }else{
       json = '{"msg":"Not a JSON object","rst":false}'
+    }
+  }
+
+  //留言审核列表
+  if("comments"==paths[1]){
+    json=JSON.stringify({rst:true,comments:await getComments()});
+  }
+
+  //审核或删除留言
+  if("commentModerate"==paths[1]){
+    try{
+      const input=await request.json(),
+          comments=await getComments(),
+          index=comments.findIndex(item=>item.id==input.id);
+      if(-1==index){
+        json='{"msg":"留言不存在","rst":false}';
+      }else if("approve"==input.action){
+        comments[index].status="approved";
+        await saveComments(comments);
+        json='{"msg":"审核通过","rst":true}';
+      }else if("delete"==input.action){
+        comments.splice(index,1);
+        await saveComments(comments);
+        json='{"msg":"留言已删除","rst":true}';
+      }else{
+        json='{"msg":"无效操作","rst":false}';
+      }
+    }catch(error){
+      json=JSON.stringify({msg:"操作失败",rst:false});
     }
   }
   
@@ -1160,6 +1344,8 @@ async function generateId(){
   SYSTEM_VALUE_WidgetCategory   分类目录
   SYSTEM_VALUE_WidgetTags       标签
   SYSTEM_VALUE_WidgetLink       链接
+  SYSTEM_VALUE_CommentSettings  留言设置
+  SYSTEM_COMMENTS_LIST          留言列表
 */
 
 //KV读取，toJson是否转为json，默认false
@@ -1197,6 +1383,19 @@ async function getWidgetTags(){
 //KV读取，获取链接
 async function getWidgetLink(){
   return await getKV("SYSTEM_VALUE_WidgetLink", true);
+}
+//读取留言设置
+async function getCommentSettings(){
+  const value=await getKV("SYSTEM_VALUE_CommentSettings",true);
+  return value&& !Array.isArray(value) ? {
+    blockedKeywords:Array.isArray(value.blockedKeywords)?value.blockedKeywords:[],
+    recentEnabled:false!==value.recentEnabled
+  } : {blockedKeywords:[],recentEnabled:true};
+}
+//读取全部留言（仅后台可取得邮箱和审核状态）
+async function getComments(){
+  const value=await getKV("SYSTEM_COMMENTS_LIST",true);
+  return Array.isArray(value)?value:[];
 }
 //KV读取，获取文章详细信息
 async function getArticle(id){
@@ -1238,6 +1437,12 @@ async function saveWidgetTags(value){
 //写入KV，获取链接
 async function saveWidgetLink(value){
   return await saveKV("SYSTEM_VALUE_WidgetLink", value);
+}
+async function saveCommentSettings(value){
+  return await saveKV("SYSTEM_VALUE_CommentSettings",value);
+}
+async function saveComments(value){
+  return await saveKV("SYSTEM_COMMENTS_LIST",value);
 }
 //写入KV，获取文章详细信息
 async function saveArticle(id,value){
