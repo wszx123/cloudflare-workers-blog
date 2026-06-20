@@ -26,6 +26,21 @@
 		<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/wpcom-cn/assets/fonts/icons-2.6.4.js?ver=6.1.2' id='wpcom-icons-js'></script>
 		<link rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.3.2/styles/tomorrow-night-bright.min.css">
 		<script src='https://cdn.staticfile.org/highlight.js/10.3.2/highlight.min.js'></script>
+		<style>
+			.simple-comment-board{margin-top:25px;padding:24px;background:#fff;border-top:1px solid #eee}
+			.simple-comment-board h3{margin:0 0 18px}
+			.simple-comment-form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+			.simple-comment-form input,.simple-comment-form textarea{width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #ddd;border-radius:3px}
+			.simple-comment-form textarea{grid-column:1/-1;min-height:90px;resize:vertical}
+			.simple-comment-form button{width:100px;padding:8px;border:0;border-radius:3px;background:#333;color:#fff;cursor:pointer}
+			.simple-comment-status{grid-column:1/-1;color:#666}
+			.simple-comment-list{margin:0 0 20px;padding:0;list-style:none}
+			.simple-comment-item{padding:12px 0;border-bottom:1px solid #eee}
+			.simple-comment-meta{margin-bottom:5px;color:#999;font-size:13px}
+			.simple-comment-content{white-space:pre-wrap;word-break:break-word}
+			.recent-comment-list li{padding:7px 0;border-bottom:1px solid #eee;word-break:break-word}
+			@media(max-width:767px){.simple-comment-form{grid-template-columns:1fr}.simple-comment-form textarea{grid-column:auto}}
+		</style>
 		{{ &OPT.codeBeforHead }}
 	</head>
 	<body class="archive paged category category-zhishi category-5 paged-2 category-paged-2 lang-cn el-boxed">
@@ -130,6 +145,18 @@
 							</div>
 							<div id="comments" class="entry-comments">
 								{{ &OPT.commentCode }}
+								<div class="simple-comment-board" data-article-id="{{ &articleSingle.id }}">
+									<h3>留言板</h3>
+									<ul class="simple-comment-list"><li>正在加载留言...</li></ul>
+									<form class="simple-comment-form">
+										<input name="nickname" maxlength="30" placeholder="昵称（必填）" required>
+										<input name="email" type="email" maxlength="100" placeholder="邮箱（必填，不公开）" required>
+										<input name="website" type="url" maxlength="200" placeholder="网址（可选）">
+										<textarea name="content" maxlength="100" placeholder="留言内容，最多100字" required></textarea>
+										<div class="simple-comment-status"></div>
+										<button type="submit">提交留言</button>
+									</form>
+								</div>
 							</div>
 						</div>
 					</article>
@@ -172,6 +199,18 @@
 							<a href="/tags/{{&.}}" class="tag-cloud-link tag-link-6 tag-link-position-1" style="font-size: 8pt;" aria-label="{{&.}}">{{&.}}</a>
 							{{ /widgetTagsList }}
 						</div>
+					</div>
+					<div id="linkcat-0" class="widget widget_links">
+						<h3 class="widget-title"><span>链接</span></h3>
+						<ul class="tagcloud">
+							{{ #widgetLinkList }}
+							<a href="{{ &url }}" target="_blank" rel="noopener noreferrer">{{ &title }}</a>
+							{{ /widgetLinkList }}
+						</ul>
+					</div>
+					<div class="widget widget_recent_comments recent-comment-widget" style="display:none;">
+						<h3 class="widget-title"><span>最近评论</span></h3>
+						<ul class="recent-comment-list"></ul>
 					</div>
 
 		</div>
@@ -261,6 +300,96 @@ var fifuImageVars = {"fifu_lazy":"1","fifu_woo_lbox_enabled":"1","fifu_woo_zoom"
 			}).then(function (data) {
 				count.textContent = data.views != null ? data.views : 0;
 			}).catch(function () {});
+		})();
+		</script>
+		<script>
+		(function () {
+			var board=document.querySelector('.simple-comment-board');
+			if(!board) return;
+			var articleId=board.getAttribute('data-article-id');
+			var list=board.querySelector('.simple-comment-list');
+			var form=board.querySelector('.simple-comment-form');
+			var status=board.querySelector('.simple-comment-status');
+
+			function renderComments(comments){
+				list.innerHTML='';
+				if(!comments.length){
+					var empty=document.createElement('li');
+					empty.textContent='暂无留言，来坐第一排吧。';
+					list.appendChild(empty);
+					return;
+				}
+				comments.forEach(function(comment){
+					var item=document.createElement('li');
+					item.className='simple-comment-item';
+					var meta=document.createElement('div');
+					meta.className='simple-comment-meta';
+					var author=comment.website?document.createElement('a'):document.createElement('span');
+					author.textContent=comment.nickname;
+					if(comment.website){author.href=comment.website;author.target='_blank';author.rel='noopener noreferrer';}
+					meta.appendChild(author);
+					meta.appendChild(document.createTextNode(' · '+new Date(comment.createdAt).toLocaleString()));
+					var content=document.createElement('div');
+					content.className='simple-comment-content';
+					content.textContent=comment.content;
+					item.appendChild(meta);
+					item.appendChild(content);
+					list.appendChild(item);
+				});
+			}
+
+			function loadComments(){
+				fetch('/api/comments/'+encodeURIComponent(articleId),{credentials:'same-origin',cache:'no-store'})
+					.then(function(response){return response.json();})
+					.then(function(data){renderComments(data.comments||[]);})
+					.catch(function(){list.textContent='留言加载失败';});
+			}
+
+			form.addEventListener('submit',function(event){
+				event.preventDefault();
+				var button=form.querySelector('button[type="submit"]');
+				var payload={
+					nickname:form.elements.nickname.value,
+					email:form.elements.email.value,
+					website:form.elements.website.value,
+					content:form.elements.content.value
+				};
+				button.disabled=true;
+				status.textContent='正在提交...';
+				fetch('/api/comments/'+encodeURIComponent(articleId),{
+					method:'POST',credentials:'same-origin',cache:'no-store',
+					headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
+				}).then(function(response){return response.json();})
+					.then(function(data){
+						status.textContent=data.msg||'提交完成';
+						if(data.rst) form.reset();
+					})
+					.catch(function(){status.textContent='留言提交失败，请稍后重试';})
+					.then(function(){button.disabled=false;});
+			});
+			loadComments();
+		})();
+		</script>
+		<script>
+		(function () {
+			var widget=document.querySelector('.recent-comment-widget');
+			if(!widget) return;
+			fetch('/api/comments/recent',{credentials:'same-origin',cache:'no-store'})
+				.then(function(response){return response.json();})
+				.then(function(data){
+					if(!data.enabled||!data.comments||!data.comments.length) return;
+					var list=widget.querySelector('.recent-comment-list');
+					data.comments.forEach(function(comment){
+						var item=document.createElement('li');
+						var link=document.createElement('a');
+						link.href='/article/'+comment.articleId+'/';
+						link.textContent=comment.nickname+'：'+comment.content;
+						link.title=comment.articleTitle||'';
+						item.appendChild(link);
+						list.appendChild(item);
+					});
+					widget.style.display='block';
+				}).catch(function(){});
 		})();
 		</script>
 		{{ &OPT.codeBeforBody }}
