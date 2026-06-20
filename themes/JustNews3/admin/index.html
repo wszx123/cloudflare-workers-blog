@@ -64,7 +64,7 @@
 			<form id="addNewForm"  class="form-inline" >
 				<div class="form-group" style="width: 98%">
 					<input type="hidden" class="form-control" name="id" id="id" >
-					<input type="text" class="form-control" name="title" id="title" placeholder="标题" style="width: 95.7%;" required="true">
+					<input type="text" class="form-control" name="title" id="title" placeholder="标题" style="width: 100%;" required="true">
 				</div>
 				<div class="form-group">
 					<label for="exampleInputEmail2">特色图片</label>
@@ -103,7 +103,7 @@
 						<option value="always" >always</option>
 					    </select>
 				</div>
-					<a  tabindex="0"  role="button"  type="submit" id="btn_saveAddNew" class="btn btn-default" onclick="saveAddNew()" style="color: green;">保存</a>
+					<a  tabindex="0"  role="button"  type="submit" id="btn_saveAddNew" class="btn btn-default" onclick="saveAddNew()">保存</a>
 					
 				<div id="content"><textarea style="display:none;"></textarea></div>
 			</form>
@@ -294,6 +294,15 @@
 			data: JSON.stringify($("#importForm").serializeArray()), 
             success: function (result) {
                 alert(result.msg);
+            },
+            error: function (xhr) {
+                var message = "导入失败";
+                try {
+                    message = JSON.parse(xhr.responseText).msg || message;
+                } catch (e) {
+                    if (xhr.responseText) message += "：" + xhr.responseText;
+                }
+                alert(message);
             }
         });
     }
