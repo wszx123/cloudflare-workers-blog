@@ -8,17 +8,13 @@
 		<title>{{ &title }}</title>
 		<meta name="keywords" content="{{ &keyWords }}" />
 		<meta name="description" content="{{ &OPT.siteDescription }}" />
+		<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+		<link rel="preconnect" href="https://img.mypi.co" crossorigin>
+		<link rel="dns-prefetch" href="//cdn.jsdelivr.net">
                 <link rel="shortcut icon" href="https://img.mypi.co/9527abc/83bfade0ce5b2165f3149f116f09dcfd.png">
 		
 		<link rel='stylesheet' id='stylesheet-css' href='{{ &OPT.theme_github_path }}JustNews/files/main.css' type='text/css' media='all' />
 		<link rel='stylesheet' id='font-awesome-css' href='{{ &OPT.theme_github_path }}JustNews/files/font-awesome.css?ver=6.1.2' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-block-library-css' href='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/css/dist/block-library/style.min.css?ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-components-css' href='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/css/dist/components/style.min.css?ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-editor-font-css' href='https://fonts.geekzu.org/css?family=Noto+Serif%3A400%2C400i%2C700%2C700i&#038;ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-block-editor-css' href='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/css/dist/block-editor/style.min.css?ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-nux-css' href='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/css/dist/nux/style.min.css?ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='wp-editor-css' href='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/css/dist/editor/style.min.css?ver=5.6' type='text/css' media='all' />
-		<link rel='stylesheet' id='mux_video_block_style-css' href='https://cdn.jsdelivr.net/gh/newexsexy/wp@master/wp-content/plugins/ilab-media-tools/public/blocks/mediacloud-mux.blocks.style.min.css' type='text/css' media='all' />
 
 		<link rel='stylesheet' id='emojify-css' href='https://cdn.jsdelivr.net/npm/emojify.js@1.1.0/dist/css/basic/emojify.min.css?ver=1.1.0' type='text/css' media='all' />
 		<script type='text/javascript' src='https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js?ver=3.5.1' id='jquery-core-js'></script>
@@ -38,11 +34,11 @@
 					</button>
 					<div class="logo">
 						{{ #OPT.logo }}
-						<a href="/" rel="home"><img src="{{ &OPT.logo }}" alt="{{ &OPT.siteName }}"></a>
+						<a href="/" rel="home"><img src="{{ &OPT.logo }}" alt="{{ &OPT.siteName }}" decoding="async" fetchpriority="high"></a>
 						{{ /OPT.logo }}
 						
 						{{ ^OPT.logo }}
-						<a href="/" rel="home"><img src="{{ &OPT.theme_github_path }}JustNews/files/logo04.png" alt="请自定义OPT.logo"></a>
+						<a href="/" rel="home"><img src="{{ &OPT.theme_github_path }}JustNews/files/logo04.png" alt="请自定义OPT.logo" decoding="async" fetchpriority="high"></a>
 						{{ /OPT.logo }}
 					</div>
 				</div>
@@ -72,7 +68,7 @@
 								<li class="item" id="post-{{&id}}">
 									<div class="item-img">
 										<a class="item-img-inner" href="{{ &url }}" title="{{ &title }}" rel="bookmark">
-											<img width="437" height="300" src="{{ &img }}" class="attachment-post-thumbnail size-post-thumbnail wp-post-image j-lazy" alt="{{ &title }}" title="{{ &title }}" data-original="{{ &img }}" /></a>
+											<img width="437" height="300" src="{{ &img }}" class="attachment-post-thumbnail size-post-thumbnail wp-post-image j-lazy" alt="{{ &title }}" title="{{ &title }}" data-original="{{ &img }}" decoding="async" {{ #isFirst }}loading="eager" fetchpriority="high"{{ /isFirst }}{{ ^isFirst }}loading="lazy"{{ /isFirst }} /></a>
 										{{ #category }}
 											<a class="item-category" href="/category/{{&.}}" >{{&.}}</a>
 										{{ /category }}
@@ -139,7 +135,7 @@
 							<li class="item">
 								<div class="item-img">
 									<a class="item-img-inner" href="{{ &url }}" title="{{ &title }}">
-										<img width="480" height="264" src="{{ &img }}" class="attachment-post-thumbnail size-post-thumbnail wp-post-image j-lazy" alt="" title="" data-original="{{ &img }}" /></a>
+										<img width="480" height="264" src="{{ &img }}" class="attachment-post-thumbnail size-post-thumbnail wp-post-image j-lazy" alt="" title="" data-original="{{ &img }}" loading="lazy" decoding="async" /></a>
 								</div>
 								<div class="item-content">
 									<p class="item-title">
@@ -242,9 +238,7 @@
 			/* ]]> */
 			</script>
 		<script type='text/javascript' src='{{ &OPT.theme_github_path }}JustNews/files/main.js?ver=6.1.2' id='main-js'></script>
-		<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/WordPress/WordPress@5.5.3/wp-includes/js/clipboard.min.js?ver=5.6' id='clipboard-js'></script>
 		<script type='text/javascript' src='https://cdn.jsdelivr.net/npm/emojify.js@1.1.0/dist/js/emojify.min.js?ver=1.1.0' id='emojify-js'></script>
-		<script type='text/javascript' src='{{ &OPT.theme_github_path }}JustNews/files/wp-embed.js?ver=6.1.2' id='wp-embed-js'></script>
 		<script type='text/javascript' src='{{ &OPT.theme_github_path }}JustNews/files/lazySizesConfig.js?ver=3.4.9' id='lazysizes-config-js'></script>
 		<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/aFarkas/lazysizes@5.2.2/plugins/unveilhooks/ls.unveilhooks.min.js?ver=5.6' id='unveilhooks-js'></script>
 		<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/aFarkas/lazysizes@5.2.2/plugins/bgset/ls.bgset.min.js?ver=5.6' id='bgset-js'></script>
