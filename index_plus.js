@@ -651,12 +651,13 @@ async function handle_admin(request){
   
   //导入
   if("import"==paths[1]){
-    let importJsone=(await parseReq(request)).importJson;
-    console.log("开始导入",typeof importJson)
+    const importJsonText=(await parseReq(request)).importJson;
+    console.log("开始导入",typeof importJsonText)
     
-    if(checkFormat(importJson)){
-      let importJson=JSON.parse(importJson),
-          keys=Object.keys(importJson);
+    if(checkFormat(importJsonText)){
+      const importJson=JSON.parse(importJsonText),
+            // OPT is export metadata, not a value that should be restored to KV.
+            keys=Object.keys(importJson).filter(key=>"OPT"!==key);
       for(let i=0;i<keys.length;++i){
         console.log(keys[i],importJson[keys[i]]),
         await saveArticle(keys[i],importJson[keys[i]]);
